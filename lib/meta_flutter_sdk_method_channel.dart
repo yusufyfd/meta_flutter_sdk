@@ -77,6 +77,14 @@ class MethodChannelMetaFlutterSdk extends MetaFlutterSdkPlatform {
       methodChannel.invokeMapMethod<Object?, Object?>('currentAccessToken');
 
   @override
+  Future<String?> getAnonymousId() =>
+      methodChannel.invokeMethod<String>('getAnonymousId');
+
+  @override
+  Future<void> setUserId(String? userId) =>
+      methodChannel.invokeMethod<void>('setUserId', {'userId': userId});
+
+  @override
   Future<Map<Object?, Object?>> graphRequest({
     required String path,
     required String method,

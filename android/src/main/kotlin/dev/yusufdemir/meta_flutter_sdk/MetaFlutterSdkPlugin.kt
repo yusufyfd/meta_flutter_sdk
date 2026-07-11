@@ -68,6 +68,8 @@ class MetaFlutterSdkPlugin :
                 "login" -> login(call, result)
                 "logout" -> complete(result) { LoginManager.getInstance().logOut() }
                 "currentAccessToken" -> result.success(accessTokenMap(AccessToken.getCurrentAccessToken()))
+                "getAnonymousId" -> result.success(AppEventsLogger.getAnonymousAppDeviceGUID(context))
+                "setUserId" -> complete(result) { AppEventsLogger.setUserID(call.argument<String>("userId")) }
                 "graphRequest" -> graphRequest(call, result)
                 else -> result.notImplemented()
             }

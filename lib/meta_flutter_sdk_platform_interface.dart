@@ -38,6 +38,8 @@ abstract class MetaFlutterSdkPlatform extends PlatformInterface {
   });
   Future<void> logout();
   Future<Map<Object?, Object?>?> currentAccessToken();
+  Future<String?> getAnonymousId();
+  Future<void> setUserId(String? userId);
   Future<Map<Object?, Object?>> graphRequest({
     required String path,
     required String method,

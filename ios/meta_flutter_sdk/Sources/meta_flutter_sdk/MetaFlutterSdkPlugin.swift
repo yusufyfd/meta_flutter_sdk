@@ -55,6 +55,11 @@ public final class MetaFlutterSdkPlugin: NSObject, FlutterPlugin {
         result(nil)
       case "currentAccessToken":
         result(accessTokenMap(AccessToken.current))
+      case "getAnonymousId":
+        result(AppEvents.shared.anonymousID)
+      case "setUserId":
+        AppEvents.shared.userID = arguments(call)["userId"] as? String
+        result(nil)
       case "graphRequest":
         try graphRequest(call, result: result)
       default:

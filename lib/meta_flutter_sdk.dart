@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'meta_flutter_sdk_platform_interface.dart';
 
 export 'src/models.dart';
+export 'src/meta_app_events.dart';
 
 import 'src/models.dart';
 
@@ -82,6 +83,11 @@ class MetaFlutterSdk {
       return value == null ? null : MetaAccessToken.fromMap(value);
     });
   }
+
+  Future<String?> getAnonymousId() => _guard(_platform.getAnonymousId);
+
+  Future<void> setUserId(String? userId) =>
+      _guard(() => _platform.setUserId(userId));
 
   Future<MetaGraphResponse> graphRequest(
     String path, {
