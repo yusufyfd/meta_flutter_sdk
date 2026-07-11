@@ -61,13 +61,16 @@ class MetaFlutterSdk {
   Future<void> flushEvents() => _guard(_platform.flushEvents);
 
   Future<MetaLoginResult> login({
-    List<String> permissions = const ['public_profile', 'email'],
+    List<MetaLoginPermission> permissions = const [
+      MetaLoginPermission.publicProfile,
+      MetaLoginPermission.email,
+    ],
     MetaLoginTracking tracking = MetaLoginTracking.enabled,
     String? nonce,
   }) async {
     return _guard(() async {
       final value = await _platform.login(
-        permissions: permissions,
+        permissions: permissions.map((e) => e.value).toList(),
         tracking: tracking.name,
         nonce: nonce,
       );
@@ -82,6 +85,11 @@ class MetaFlutterSdk {
       final value = await _platform.currentAccessToken();
       return value == null ? null : MetaAccessToken.fromMap(value);
     });
+  }
+
+  Future<bool> get isLogged async {
+    final token = await currentAccessToken;
+    return token != null && !token.isExpired;
   }
 
   Future<String?> getAnonymousId() => _guard(_platform.getAnonymousId);

@@ -6,6 +6,20 @@ enum MetaLoginTracking { enabled, limited }
 
 enum MetaGraphMethod { get, post, delete }
 
+enum MetaLoginPermission {
+  publicProfile('public_profile'),
+  email('email'),
+  userFriends('user_friends'),
+  userBirthday('user_birthday'),
+  userGender('user_gender'),
+  userLink('user_link'),
+  userLocation('user_location'),
+  userAgeRange('user_age_range');
+
+  const MetaLoginPermission(this.value);
+  final String value;
+}
+
 class MetaSdkConfiguration {
   const MetaSdkConfiguration({
     this.autoInitialize = true,
@@ -83,6 +97,8 @@ class MetaAccessToken {
   final List<String> expiredPermissions;
   final DateTime expiresAt;
   final DateTime? dataAccessExpiresAt;
+
+  bool get isExpired => DateTime.now().isAfter(expiresAt);
 }
 
 class MetaLoginResult {
@@ -114,6 +130,8 @@ class MetaLoginResult {
   final String? authenticationToken;
   final List<String> grantedPermissions;
   final List<String> declinedPermissions;
+
+  bool get isSuccess => !cancelled && accessToken != null;
 }
 
 class MetaGraphResponse {
