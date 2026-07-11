@@ -259,6 +259,23 @@ public final class MetaFlutterSdkPlugin: NSObject, FlutterPlugin {
   ) -> Bool {
     ApplicationDelegate.shared.application(application, open: url, options: options)
   }
+
+  @available(iOS 13.0, *)
+  public func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    guard let context = URLContexts.first else { return }
+    var options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+    if let sourceApplication = context.options.sourceApplication {
+      options[.sourceApplication] = sourceApplication
+    }
+    if let annotation = context.options.annotation {
+      options[.annotation] = annotation
+    }
+    ApplicationDelegate.shared.application(
+      UIApplication.shared,
+      open: context.url,
+      options: options
+    )
+  }
 }
 
 private enum MetaNativeError: LocalizedError {
