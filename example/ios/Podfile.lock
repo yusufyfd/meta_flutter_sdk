@@ -1,0 +1,49 @@
+PODS:
+  - FBAEMKit (18.0.3):
+    - FBSDKCoreKit_Basics (= 18.0.3)
+  - FBSDKCoreKit (18.0.3):
+    - FBAEMKit (= 18.0.3)
+    - FBSDKCoreKit_Basics (= 18.0.3)
+  - FBSDKCoreKit_Basics (18.0.3)
+  - FBSDKLoginKit (18.0.3):
+    - FBSDKCoreKit (= 18.0.3)
+  - Flutter (1.0.0)
+  - integration_test (0.0.1):
+    - Flutter
+  - meta_flutter_sdk (0.1.0):
+    - FBSDKCoreKit (= 18.0.3)
+    - FBSDKLoginKit (= 18.0.3)
+    - Flutter
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - meta_flutter_sdk (from `.symlinks/plugins/meta_flutter_sdk/ios`)
+
+SPEC REPOS:
+  trunk:
+    - FBAEMKit
+    - FBSDKCoreKit
+    - FBSDKCoreKit_Basics
+    - FBSDKLoginKit
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  meta_flutter_sdk:
+    :path: ".symlinks/plugins/meta_flutter_sdk/ios"
+
+SPEC CHECKSUMS:
+  FBAEMKit: 2a6b529993713c185b02bc36f8c91129bf78dfb0
+  FBSDKCoreKit: 65d7f7a7d6fcc3aa6eb6e093ec737a4184fc6049
+  FBSDKCoreKit_Basics: 7bc9d8fde8f70985fba2ed7c1d07e319f969a991
+  FBSDKLoginKit: 66d20fcb7afcafc0c420477662f96845cd1a5179
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
+  meta_flutter_sdk: edcb41f243cbb64a699e2bf62e6755415b0ad0cf
+
+PODFILE CHECKSUM: 251cb053df7158f337c0712f2ab29f4e0fa474ce
+
+COCOAPODS: 1.16.2
