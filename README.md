@@ -152,8 +152,11 @@ final login = await meta.login(
   permissions: const ['public_profile', 'email'],
 );
 
-if (!login.cancelled) {
+if (login.isSuccess) {
   print(login.accessToken?.userId);
+} else {
+  print('${login.error?.code}: ${login.error?.message}');
+  print(login.error?.details); // Can be null for user cancellation.
 }
 ```
 

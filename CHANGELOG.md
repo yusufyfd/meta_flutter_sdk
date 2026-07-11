@@ -1,3 +1,8 @@
+## Unreleased
+
+- Add Flutter UIScene lifecycle support for iOS URL callbacks.
+- Add structured, nullable error details to cancelled and failed login results.
+
 ## 0.1.0
 
 - Add explicit native Facebook SDK initialization for Android and iOS.

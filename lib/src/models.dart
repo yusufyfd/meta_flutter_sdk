@@ -108,6 +108,7 @@ class MetaLoginResult {
     this.authenticationToken,
     this.grantedPermissions = const [],
     this.declinedPermissions = const [],
+    this.error,
   });
 
   factory MetaLoginResult.fromMap(Map<Object?, Object?> map) =>
@@ -121,6 +122,9 @@ class MetaLoginResult {
         authenticationToken: map['authenticationToken'] as String?,
         grantedPermissions: _strings(map['grantedPermissions']),
         declinedPermissions: _strings(map['declinedPermissions']),
+        error: map['error'] == null
+            ? null
+            : MetaLoginError.fromMap(map['error']! as Map<Object?, Object?>),
       );
 
   final bool cancelled;
@@ -130,8 +134,35 @@ class MetaLoginResult {
   final String? authenticationToken;
   final List<String> grantedPermissions;
   final List<String> declinedPermissions;
+  final MetaLoginError? error;
 
-  bool get isSuccess => !cancelled && accessToken != null;
+  bool get isSuccess =>
+      !cancelled &&
+      error == null &&
+      (accessToken != null || authenticationToken != null);
+
+  bool get isFailure => error != null && !cancelled;
+}
+
+class MetaLoginError {
+  const MetaLoginError({
+    required this.code,
+    required this.message,
+    this.details,
+  });
+
+  factory MetaLoginError.fromMap(Map<Object?, Object?> map) => MetaLoginError(
+    code: map['code']! as String,
+    message: map['message']! as String,
+    details: map['details'],
+  );
+
+  final String code;
+  final String message;
+
+  /// Platform-specific diagnostic data. This can be null, particularly when
+  /// the user deliberately cancels login.
+  final Object? details;
 }
 
 class MetaGraphResponse {

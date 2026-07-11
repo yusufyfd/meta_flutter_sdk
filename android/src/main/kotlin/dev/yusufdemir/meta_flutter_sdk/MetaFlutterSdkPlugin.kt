@@ -205,6 +205,7 @@ class MetaFlutterSdkPlugin :
                             "authenticationToken" to null,
                             "grantedPermissions" to result.recentlyGrantedPermissions.toList(),
                             "declinedPermissions" to result.recentlyDeniedPermissions.toList(),
+                            "error" to null,
                         ),
                     )
                     pendingLogin = null
@@ -218,13 +219,34 @@ class MetaFlutterSdkPlugin :
                             "authenticationToken" to null,
                             "grantedPermissions" to emptyList<String>(),
                             "declinedPermissions" to emptyList<String>(),
+                            "error" to mapOf(
+                                "code" to "login_cancelled",
+                                "message" to "The user cancelled Facebook Login.",
+                                "details" to null,
+                            ),
                         ),
                     )
                     pendingLogin = null
                 }
 
                 override fun onError(error: FacebookException) {
-                    pendingLogin?.nativeError(error, "login_failed")
+                    pendingLogin?.success(
+                        mapOf(
+                            "cancelled" to false,
+                            "accessToken" to null,
+                            "authenticationToken" to null,
+                            "grantedPermissions" to emptyList<String>(),
+                            "declinedPermissions" to emptyList<String>(),
+                            "error" to mapOf(
+                                "code" to "login_failed",
+                                "message" to (error.message ?: "Facebook Login failed."),
+                                "details" to mapOf(
+                                    "type" to error.javaClass.name,
+                                    "cause" to error.cause?.javaClass?.name,
+                                ),
+                            ),
+                        ),
+                    )
                     pendingLogin = null
                 }
             },

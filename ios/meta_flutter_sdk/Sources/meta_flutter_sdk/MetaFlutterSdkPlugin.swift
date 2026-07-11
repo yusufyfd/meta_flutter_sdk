@@ -3,7 +3,7 @@ import FBSDKLoginKit
 import Flutter
 import UIKit
 
-public final class MetaFlutterSdkPlugin: NSObject, FlutterPlugin {
+public final class MetaFlutterSdkPlugin: NSObject, FlutterPlugin, FlutterSceneLifeCycleDelegate {
   private let loginManager = LoginManager()
   private weak var viewController: UIViewController?
 
@@ -16,6 +16,7 @@ public final class MetaFlutterSdkPlugin: NSObject, FlutterPlugin {
     instance.viewController = registrar.viewController
     registrar.addMethodCallDelegate(instance, channel: channel)
     registrar.addApplicationDelegate(instance)
+    registrar.addSceneDelegate(instance)
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
@@ -152,9 +153,21 @@ public final class MetaFlutterSdkPlugin: NSObject, FlutterPlugin {
           "authenticationToken": NSNull(),
           "grantedPermissions": [],
           "declinedPermissions": [],
+          "error": [
+            "code": "login_cancelled",
+            "message": "The user cancelled Facebook Login.",
+            "details": NSNull(),
+          ],
         ])
       case .failed(let error):
-        result(self.flutterError(error, code: "login_failed"))
+        result([
+          "cancelled": false,
+          "accessToken": NSNull(),
+          "authenticationToken": NSNull(),
+          "grantedPermissions": [],
+          "declinedPermissions": [],
+          "error": self.loginErrorMap(error),
+        ])
       case .success(let granted, let declined, let token):
         let payload: [String: Any] = [
           "cancelled": false,
@@ -162,6 +175,7 @@ public final class MetaFlutterSdkPlugin: NSObject, FlutterPlugin {
           "authenticationToken": AuthenticationToken.current?.tokenString ?? NSNull(),
           "grantedPermissions": granted.map(\.name),
           "declinedPermissions": declined.map(\.name),
+          "error": NSNull(),
         ]
         result(payload)
       }
@@ -236,6 +250,19 @@ public final class MetaFlutterSdkPlugin: NSObject, FlutterPlugin {
     )
   }
 
+  private func loginErrorMap(_ error: Error) -> [String: Any] {
+    let nativeError = error as NSError
+    return [
+      "code": "login_failed",
+      "message": error.localizedDescription,
+      "details": [
+        "type": String(describing: type(of: error)),
+        "domain": nativeError.domain,
+        "nativeCode": nativeError.code,
+      ],
+    ]
+  }
+
   public func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [AnyHashable: Any] = [:]
@@ -261,20 +288,28 @@ public final class MetaFlutterSdkPlugin: NSObject, FlutterPlugin {
   }
 
   @available(iOS 13.0, *)
-  public func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    guard let context = URLContexts.first else { return }
-    var options: [UIApplication.OpenURLOptionsKey: Any] = [:]
-    if let sourceApplication = context.options.sourceApplication {
-      options[.sourceApplication] = sourceApplication
+  public func scene(
+    _ scene: UIScene,
+    openURLContexts URLContexts: Set<UIOpenURLContext>
+  ) -> Bool {
+    var handled = false
+    for context in URLContexts {
+      var options: [UIApplication.OpenURLOptionsKey: Any] = [
+        .openInPlace: context.options.openInPlace
+      ]
+      if let sourceApplication = context.options.sourceApplication {
+        options[.sourceApplication] = sourceApplication
+      }
+      if let annotation = context.options.annotation {
+        options[.annotation] = annotation
+      }
+      handled = ApplicationDelegate.shared.application(
+        UIApplication.shared,
+        open: context.url,
+        options: options
+      ) || handled
     }
-    if let annotation = context.options.annotation {
-      options[.annotation] = annotation
-    }
-    ApplicationDelegate.shared.application(
-      UIApplication.shared,
-      open: context.url,
-      options: options
-    )
+    return handled
   }
 }
 

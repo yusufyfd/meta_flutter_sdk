@@ -82,4 +82,58 @@ void main() {
     expect(token.permissions, ['email']);
     expect(token.expiresAt, DateTime.fromMillisecondsSinceEpoch(1000));
   });
+
+  test('login cancellation preserves a nullable error detail', () {
+    final result = MetaLoginResult.fromMap({
+      'cancelled': true,
+      'accessToken': null,
+      'authenticationToken': null,
+      'grantedPermissions': <String>[],
+      'declinedPermissions': <String>[],
+      'error': {
+        'code': 'login_cancelled',
+        'message': 'The user cancelled Facebook Login.',
+        'details': null,
+      },
+    });
+
+    expect(result.cancelled, isTrue);
+    expect(result.isSuccess, isFalse);
+    expect(result.isFailure, isFalse);
+    expect(result.error?.code, 'login_cancelled');
+    expect(result.error?.details, isNull);
+  });
+
+  test('login failure preserves native error details', () {
+    final result = MetaLoginResult.fromMap({
+      'cancelled': false,
+      'accessToken': null,
+      'authenticationToken': null,
+      'grantedPermissions': <String>[],
+      'declinedPermissions': <String>[],
+      'error': {
+        'code': 'login_failed',
+        'message': 'Native login failed.',
+        'details': {'nativeCode': 42},
+      },
+    });
+
+    expect(result.isFailure, isTrue);
+    expect(result.error?.message, 'Native login failed.');
+    expect(result.error?.details, {'nativeCode': 42});
+  });
+
+  test('limited login authentication token counts as success', () {
+    final result = MetaLoginResult.fromMap({
+      'cancelled': false,
+      'accessToken': null,
+      'authenticationToken': 'oidc-token',
+      'grantedPermissions': <String>[],
+      'declinedPermissions': <String>[],
+      'error': null,
+    });
+
+    expect(result.isSuccess, isTrue);
+    expect(result.isFailure, isFalse);
+  });
 }

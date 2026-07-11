@@ -33,9 +33,13 @@ class _MetaSdkExampleState extends State<MetaSdkExample> {
     try {
       final login = await sdk.login();
       setState(() {
-        status = login.cancelled
-            ? 'Login cancelled'
-            : 'User: ${login.accessToken?.userId}';
+        if (login.cancelled) {
+          status = login.error?.message ?? 'Login cancelled';
+        } else if (login.isFailure) {
+          status = '${login.error!.code}: ${login.error!.message}';
+        } else {
+          status = 'User: ${login.accessToken?.userId}';
+        }
       });
     } on MetaSdkException catch (error) {
       setState(() => status = '${error.code}: ${error.message}');
